@@ -7,7 +7,7 @@ const app = express();
 // Render hutoa PORT yenyewe, 8080 ni mbadala tu
 const PORT = process.env.PORT || 8080;
 
-// Data zako za Supabase (Zimebaki zile zile)
+// Data zako za Supabase
 const supabaseUrl = 'https://ftqxafzcoipouiygxulh.supabase.co';
 const supabaseKey = 'Sb_publishable_yTQY-Q5Hb36e1g4QHWazqg_Ktt2Emcx';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -20,7 +20,10 @@ app.get('/', (req, res) => {
     res.send('M-Cloud Server is LIVE on Cloud!');
 });
 
-// 1. SEHEMU YA KUPOKEA SMS (Kutoka kwenye simu/App kwenda Cloud)
+/**
+ * 1. SEHEMU YA KUPOKEA SMS
+ * Inatumika kutuma SMS kutoka kwenye simu kwenda Supabase
+ */
 app.post('/api/sms', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -34,14 +37,16 @@ app.post('/api/sms', async (req, res) => {
     }
 });
 
-// 2. SEHEMU YA KUSOMA SMS (Inayotumiwa na App yako kuonyesha list ya SMS)
-// Hii ndiyo njia (Route) iliyokuwa inasababisha "Cannot GET /api/pwa/sms"
+/**
+ * 2. SEHEMU YA KUSOMA SMS (Route mpya)
+ * Inatumiwa na App yako ya Netlify kuonyesha list ya SMS
+ */
 app.get('/api/pwa/sms', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('sms_logs')
             .select('*')
-            .order('created_at', { ascending: false }); // Inapanga kuanzia mpya zaidi
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         res.json(data);
@@ -50,9 +55,9 @@ app.get('/api/pwa/sms', async (req, res) => {
     }
 });
 
-// Sehemu ya picha (Kama utaitumia baadae)
+// Sehemu ya picha (Inarudisha list tupu kwa sasa)
 app.get('/api/pwa/images', (req, res) => {
-    res.json([]); // Kwa sasa inarudisha list tupu
+    res.json([]);
 });
 
 app.listen(PORT, () => {
